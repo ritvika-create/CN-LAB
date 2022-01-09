@@ -1,79 +1,69 @@
-#include <bits/stdc++.h> 
-using namespace std;
-#define MAX 10
-int n;
-class router {
-char adj_new[MAX], adj_old[MAX];
-int table_new[MAX], table_old[MAX];
- public:
- router( ){
-for(int i=0;i<MAX;i++) table_old[i]=table_new[i]=99;
- }
-void copy( ){
-for(int i=0;i<n;i++) {
- adj_old[i] =adj_new[i];
- table_old[i]=table_new[i];
- }
- }
-int equal( ) {
-for(int i=0;i<n;i++)
-if(table_old[i]!=table_new[i]||adj_new[i]!=adj_old[i])return 0;
-return 1;
- }
-void input(int j) {
- cout<<"Enter 1 if the corresponding router is adjacent to router"
-<<(char)('A'+j)<<" else enter 99: "<<endl<<" ";
-for(int i=0;i<n;i++)
-if(i!=j) cout<<(char)('A'+i)<<" ";
- cout<<"\nEnter matrix:";
-for(int i=0;i<n;i++) {
-if(i==j)
- table_new[i]=0;
-else
- cin>>table_new[i];
- adj_new[i]= (char)('A'+i);
- }
- cout<<endl;
- }
-void display(){
- cout<<"\nDestination Router: ";
-for(int i=0;i<n;i++) cout<<(char)('A'+i)<<" ";
- cout<<"\nOutgoing Line: ";
-for(int i=0;i<n;i++) cout<<adj_new[i]<<" ";
- cout<<"\nHop Count: ";
-for(int i=0;i<n;i++) cout<<table_new[i]<<" ";
- }
-void build(int j) {
-for(int i=0;i<n;i++)
-for(int k=0;(i!=j)&&(k<n);k++)
-if(table_old[i]!=99)
-if((table_new[i]+table_new[k])<table_new[k]) {
- table_new[k]=table_new[i]+table_new[k];
- adj_new[k]=(char)('A'+i);
- }
- }
-} r[MAX];
-void build_table( ) {
-int i=0, j=0;
-while(i!=n) {
-for(i=j;i<n;i++) {
- r[i].copy();
- r[i].build(i);
- }
-for(i=0;i<n;i++)
-if(!r[i].equal()) {
- j=i;
-break;
- }
- }
-}
-int main() {
- cout<<"Enter the number the routers(<"<<MAX<<"): "; cin>>n;
-for(int i=0;i<n;i++) r[i].input(i);
- build_table();
-for(int i=0;i<n;i++) {
- cout<<"Router Table entries for router "<<(char)('A'+i)<<":-";
- r[i].display();
- cout<<endl<<endl;
- }
-}
+def xor1(a, b):
+ x = ""
+ # print(len(a),len(b))
+ for i in range(1, len(a)):
+ if a[i] == b[i]:
+ x += "0"
+ else:
+ x += "1"
+ return x
+def modulo2(divident, divisor):
+ divlen = len(divisor)
+ temp = divident[0:divlen]
+ # print(temp)
+ while(divlen < len(divident)):
+ if temp[0] == "1":
+ temp = xor1(temp, divisor)+divident[divlen]
+ else:
+ temp = temp[1:divlen]+divident[divlen]
+ # print(temp)
+ divlen += 1
+ # print(temp)
+ if temp[0] == "1":
+ temp = xor1(temp, divisor)
+ # return "0"+temp
+ # print(len(temp),)
+ if len(temp) < len(divisor):
+ return "0"+temp
+ return temp
+def encode(data, key):
+ append = data+"0"*(len(key))
+ # print(code)
+ rem = modulo2(append, key)
+ print("remaindar="+rem)
+ code = data+rem
+ print("code="+code)
+ # Checking the logic:
+ rem = modulo2(code, key)
+ print("Remaindar we get when we do not have error="+rem)
+ code = code.replace("011", "101")
+ rem = modulo2(code, key)
+ print("Remaindar we get when we have error="+rem)
+def polytobin(string):
+ keys = []
+ key = ""
+ for i in string:
+ if i == '+':
+ keys.append(int(key[1:]))
+ key = ""
+ continue
+ key += i
+ if key != "":
+ keys.append(0)
+ bina = ""
+ j = 0
+ print(keys)
+ for i in range(keys[0], -1, -1):
+ if i == (keys[j]):
+ bina += "1"
+ j += 1
+ else:
+ bina += "0"
+ print(bina)
+ return bina
+string = input("Enter the key polynomial:\n")
+key = polytobin(string)
+string = input("Enter the data polynomial:\n")
+data = polytobin(string)
+print(key, data)
+encode(data, key)
